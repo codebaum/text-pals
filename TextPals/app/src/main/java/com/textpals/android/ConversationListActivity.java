@@ -1,10 +1,16 @@
 package com.textpals.android;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-
+import com.memetix.mst.language.Language;
+import com.memetix.mst.translate.Translate;
 
 
 /**
@@ -52,6 +58,47 @@ public class ConversationListActivity extends Activity
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
+
+        Translate.setClientId("text-pals");
+        Translate.setClientSecret("DVx9fWsXLJdcbvOpL+DwBN0sL8C6g+KSU579OoJ4IvI=");
+
+        try {
+            class bgStuff extends AsyncTask<Void, Void, String> {
+
+                String translatedText = "";
+                @Override
+                protected String doInBackground(Void... params) {
+                    // TODO Auto-generated method stub
+                    try {
+                        String translatedText = Translate.execute("Hello, my name is Brandon", Language.ENGLISH, Language.SPANISH);
+                        return translatedText;
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        translatedText = e.toString();
+                    }
+
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(String result) {
+                    super.onPostExecute(result);
+
+                    if (result == null) {
+                        result = "ERROR";
+                    }
+                    Toast.makeText(ConversationListActivity.this, result, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            new bgStuff().execute();
+        }
+        catch (Exception e) {
+            Log.e("TRANSLATE ERROR", e.toString());
+            Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
